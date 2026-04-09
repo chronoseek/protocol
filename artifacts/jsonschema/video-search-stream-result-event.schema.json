@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "VideoSearchResponse",
+  "title": "VideoSearchStreamResultEventData",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -19,12 +19,7 @@
     },
     "status": {
       "type": "string",
-      "enum": [
-        "accepted",
-        "processing",
-        "completed",
-        "failed"
-      ]
+      "const": "processing"
     },
     "results": {
       "type": "array",
@@ -57,6 +52,9 @@
     "miner_metadata": {
       "type": "object",
       "additionalProperties": true
+    },
+    "source_uid": {
+      "type": "integer"
     }
   }
 }

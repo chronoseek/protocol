@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "VideoSearchResponse",
+  "title": "VideoSearchStreamDoneEventData",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -19,12 +19,7 @@
     },
     "status": {
       "type": "string",
-      "enum": [
-        "accepted",
-        "processing",
-        "completed",
-        "failed"
-      ]
+      "const": "completed"
     },
     "results": {
       "type": "array",

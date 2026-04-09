@@ -10,7 +10,7 @@ const nonEmptyStringSchema = {
 
 const protocolVersionSchema = {
   type: "string",
-  const: "2026-03-01",
+  const: "2026-04-10",
 };
 
 const videoSearchRequestSchema = {
@@ -91,6 +91,69 @@ const videoSearchResponseSchema = {
   },
 };
 
+const videoSearchStreamAcceptedEventSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  title: "VideoSearchStreamAcceptedEventData",
+  type: "object",
+  additionalProperties: false,
+  required: ["protocol_version", "status", "queried_uids"],
+  properties: {
+    protocol_version: protocolVersionSchema,
+    request_id: {
+      ...nonEmptyStringSchema,
+    },
+    status: {
+      type: "string",
+      const: "accepted",
+    },
+    queried_uids: {
+      type: "array",
+      default: [],
+      items: {
+        type: "integer",
+      },
+    },
+  },
+};
+
+const videoSearchStreamResultEventSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  title: "VideoSearchStreamResultEventData",
+  type: "object",
+  additionalProperties: false,
+  required: ["protocol_version", "status", "results"],
+  properties: {
+    protocol_version: protocolVersionSchema,
+    request_id: {
+      ...nonEmptyStringSchema,
+    },
+    status: {
+      type: "string",
+      const: "processing",
+    },
+    results: videoSearchResponseSchema.properties.results,
+    miner_metadata: {
+      type: "object",
+      additionalProperties: true,
+    },
+    source_uid: {
+      type: "integer",
+    },
+  },
+};
+
+const videoSearchStreamDoneEventSchema = {
+  ...videoSearchResponseSchema,
+  title: "VideoSearchStreamDoneEventData",
+  properties: {
+    ...videoSearchResponseSchema.properties,
+    status: {
+      type: "string",
+      const: "completed",
+    },
+  },
+};
+
 const protocolErrorSchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
   title: "ProtocolError",
@@ -127,6 +190,40 @@ const protocolErrorSchema = {
   },
 };
 
+const videoSearchStreamErrorEventSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  title: "VideoSearchStreamErrorEventData",
+  type: "object",
+  additionalProperties: false,
+  required: ["protocol_version", "status", "error"],
+  properties: {
+    protocol_version: protocolVersionSchema,
+    request_id: {
+      ...nonEmptyStringSchema,
+    },
+    status: {
+      type: "string",
+      const: "failed",
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      required: ["code", "message"],
+      properties: {
+        code: {
+          type: "string",
+          minLength: 1,
+        },
+        message: nonEmptyStringSchema,
+        details: {
+          type: "object",
+          additionalProperties: true,
+        },
+      },
+    },
+  },
+};
+
 async function writeSchema(filename, schema) {
   await writeFile(
     path.join(outDir, filename),
@@ -144,6 +241,22 @@ async function main() {
   await writeSchema(
     "video-search-response.schema.json",
     videoSearchResponseSchema,
+  );
+  await writeSchema(
+    "video-search-stream-accepted-event.schema.json",
+    videoSearchStreamAcceptedEventSchema,
+  );
+  await writeSchema(
+    "video-search-stream-result-event.schema.json",
+    videoSearchStreamResultEventSchema,
+  );
+  await writeSchema(
+    "video-search-stream-done-event.schema.json",
+    videoSearchStreamDoneEventSchema,
+  );
+  await writeSchema(
+    "video-search-stream-error-event.schema.json",
+    videoSearchStreamErrorEventSchema,
   );
   await writeSchema("protocol-error.schema.json", protocolErrorSchema);
 }

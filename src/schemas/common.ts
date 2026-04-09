@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CHRONOSEEK_PROTOCOL_VERSION = "2026-03-01" as const;
+export const CHRONOSEEK_PROTOCOL_VERSION = "2026-04-10" as const;
 
 export const protocolVersionSchema = z.literal(CHRONOSEEK_PROTOCOL_VERSION);
 
